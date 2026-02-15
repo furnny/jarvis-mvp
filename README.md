@@ -1,2 +1,2 @@
 # jarvis-mvp
-Trading behavior system 
+Trading risk monitor

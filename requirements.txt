@@ -1,0 +1,10 @@
+fastapi==0.109.0
+uvicorn==0.27.0
+python-binance==1.0.19
+python-telegram-bot==20.7
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+python-dotenv==1.0.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+redis==5.0.1

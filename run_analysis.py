@@ -31,10 +31,24 @@ from decimal import Decimal
 
 async def main():
     # --- 0) 사전 점검 ---
+    # 자격증명 우선순위: 환경변수 → (JARVIS_USER_ID 설정 시) DB에 암호화 저장된 키.
     api_key = os.getenv("BINANCE_API_KEY")
     api_secret = os.getenv("BINANCE_API_SECRET")
+
+    user_id_env = os.getenv("JARVIS_USER_ID")
+    user_id = int(user_id_env) if user_id_env else None
+
+    if (not api_key or not api_secret) and user_id is not None:
+        # DB에 저장된 봉투 암호화 키를 메모리에서만 복호화해 사용
+        from app.db.persistence import load_credential
+        creds = await load_credential(user_id)
+        if creds:
+            api_key, api_secret = creds
+            print(f"🔐 사용자 #{user_id}의 저장된 키를 복호화해 사용합니다.")
+
     if not api_key or not api_secret:
         print("❌ BINANCE_API_KEY / BINANCE_API_SECRET 환경변수가 필요합니다.")
+        print("   (또는 JARVIS_USER_ID로 DB에 저장된 키를 불러오세요.)")
         print("   읽기 전용 키만 사용하세요 (출금/거래 권한 불필요).")
         return
 
@@ -141,6 +155,17 @@ async def main():
             json.dump(payload, f, ensure_ascii=False, indent=2)
         print(f"💾 시각화 데이터 저장: {out_path}")
         print("   → 이 JSON을 프론트엔드 대시보드에 넣으면 화면이 렌더됩니다.")
+
+        # --- 8) (선택) DB 영속화: JARVIS_USER_ID 설정 시 거래/베이스라인 저장 ---
+        if user_id is not None:
+            from app.db.persistence import persist_trades, persist_baseline
+            written = await persist_trades(user_id, trades)
+            print(f"🗄️  거래 {written}건 DB 저장 (사용자 #{user_id})")
+            if recent:
+                curr_bl = build_baseline(recent, USER_STYLE, "최근 30일")
+                if curr_bl:
+                    await persist_baseline(user_id, curr_bl)
+                    print("🗄️  최근 30일 베이스라인 DB 저장")
 
     except ExchangeError as e:
         print(f"❌ 거래소 오류: {e}")

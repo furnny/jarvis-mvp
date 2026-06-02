@@ -1,10 +1,30 @@
+# Web / API
 fastapi==0.109.0
 uvicorn==0.27.0
-python-binance==1.0.19
-python-telegram-bot==20.7
-sqlalchemy==2.0.25
-psycopg2-binary==2.9.9
-python-dotenv==1.0.0
 pydantic==2.10.6
 pydantic-settings==2.8.2
+python-dotenv==1.0.0
+
+# Exchange / delivery
+python-binance==1.0.19
+python-telegram-bot==20.7
+
+# Persistence (Phase 1)
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0            # async Postgres driver (app + worker)
+psycopg2-binary==2.9.9    # sync driver (PostgresSLStore + alembic)
+aiosqlite==0.20.0         # async sqlite (tests)
+alembic==1.14.0
 redis==5.0.1
+
+# Crypto (envelope encryption) — pin >=42 to avoid the broken 41.x rust binding
+cryptography==44.0.0
+
+# Scheduling (Phase 3 daily/weekly Telegram jobs)
+apscheduler==3.10.4
+
+# Charts (Phase 3 daily/weekly images)
+matplotlib==3.9.2
+
+# Dev / test
+pytest==8.3.4

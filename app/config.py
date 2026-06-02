@@ -30,6 +30,18 @@ class Settings(BaseSettings):
     # — i18n —
     DEFAULT_LOCALE: str = "ko"
 
+    # — Web / auth (Phase 2) —
+    APP_BASE_URL: str = "http://localhost:8000"
+    SESSION_SECRET: str = "dev-only-insecure-change-me"   # sign session cookies
+    SESSION_TTL_HOURS: int = 24 * 30
+    MAGIC_LINK_TTL_MIN: int = 15
+    TELEGRAM_LINK_TTL_MIN: int = 30
+    TELEGRAM_BOT_USERNAME: str = "JarvisRiskBot"
+    EMAIL_SENDER: str = "console"   # console | resend | postmark | ses
+    # If true, also allow keys that have futures-trade enabled (Binance couples
+    # futures READ with futures TRADE — see app/web/key_validation.py).
+    ALLOW_FUTURES_TRADE_KEYS: bool = True
+
     # — Misc —
     SQL_ECHO: bool = False
 

@@ -69,6 +69,26 @@ class MagicLinkToken(Base):
     )
 
 
+class TelegramLinkCode(Base):
+    """Short-lived code linking a web user to their Telegram chat.
+
+    Web issues the code (user authenticated); the bot consumes it on /start
+    <code> and writes users.telegram_chat_id. One-time use, expiring.
+    """
+    __tablename__ = "telegram_link_codes"
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    code: Mapped[str] = mapped_column(String(32), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
 class ApiCredential(Base):
     __tablename__ = "api_credentials"
 

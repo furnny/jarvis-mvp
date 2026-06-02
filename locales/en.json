@@ -61,6 +61,35 @@
     "headline.gambling": "Right now, neither your technique nor your discipline is in place.",
     "headline.mind_deficient": "You have the technique — you just lose by not following it.",
     "headline.technique_deficient": "Your mindset is solid, but you have no weapon to swing.",
-    "headline.balanced": "By self-diagnosis you look balanced. But—"
+    "headline.balanced": "By self-diagnosis you look balanced. But—",
+
+    "intro": "Five quick questions — no data needed yet. This is a tentative read; the real diagnosis comes once you connect your trades.",
+    "scale.often": "Often",
+    "scale.sometimes": "Sometimes",
+    "scale.rarely": "Rarely",
+    "q.has_edge": "I have a setup with a verifiable edge that I trade repeatedly.",
+    "q.plan_exit": "Before entering, I've decided where I'll exit (target and stop).",
+    "q.cut_losses": "When price hits my stop, I actually cut the loss.",
+    "q.revenge": "Right after a loss, I jump back in to win it back.",
+    "q.size_control": "I keep my position size consistent instead of betting big on conviction.",
+    "cta.connect": "For the real diagnosis, connect your exchange (read-only)."
+  },
+
+  "keys": {
+    "rejected.title": "This key was rejected.",
+    "rejected.reason": "Read-only keys only. This key still has: {violations}. Remove those permissions (keep only read access) and try again.",
+    "rejected.withdrawals": "withdrawals",
+    "rejected.internal_transfer": "internal transfer",
+    "rejected.spot_margin_trading": "spot/margin trading",
+    "rejected.margin": "margin borrowing",
+    "rejected.futures_trade": "futures trading",
+    "unreachable": "Couldn't reach the exchange to verify this key. Check the key and try again.",
+    "accepted": "Key verified as read-only and stored securely."
+  },
+
+  "telegram": {
+    "link.instructions": "Open Telegram and send this to the bot to connect alerts: /start {code}",
+    "link.connected": "Telegram connected. You'll receive alerts here.",
+    "link.invalid": "This link code is invalid or has expired. Generate a new one from the web app."
   }
 }

@@ -1,0 +1,66 @@
+{
+  "_comment": "English user-facing strings. Mirrors ko.json key-for-key. Placeholders use {name}.",
+
+  "baseline": {
+    "metric.win_rate": "Win rate",
+    "metric.avg_pnl": "Avg P&L",
+    "metric.sl_coverage": "Stop-loss coverage",
+    "metric.median_leverage": "Median leverage",
+    "metric.style_consistency": "Style consistency",
+
+    "drift.too_short": "You set your style to '{style}', but more than half of recent trades are shorter than expected (median {hold} min). You may be entering impulsively.",
+    "drift.too_long": "You're holding longer than your '{style}' style suggests (median {hold} min). Are you delaying your stops?",
+    "drift.consistent": "Your actual trades match your declared '{style}' style (consistency {consistency}).",
+
+    "flag.leverage": "You usually trade at {usual}x, but this is {current}x — high leverage by your own standard.",
+    "flag.size": "This position is {ratio}x larger than your usual size.",
+    "flag.no_stop": "You usually set a stop {coverage} of the time, but there's none here."
+  },
+
+  "assess": {
+    "guardrail.ruin": "Liquidation could wipe out {pct}% of your capital. Regardless of the odds, this exposure alone makes recovery hard.",
+    "headline.volatility": "Liquidation is close relative to volatility. Give it more room.",
+    "headline.structure": "Check your position setup (stop-loss, leverage).",
+    "headline.stable": "Current risk is stable.",
+
+    "coaching.streak_size_strong": "You entered at {size}x your usual size right after {streak} losses in a row. Consider pausing.",
+    "coaching.streak_mild": "Quick re-entry after a losing streak. How about taking a beat?",
+    "coaching.size_mild": "This is {size}x your usual size. Is that the size you intended?",
+    "coaching.freq_mild": "You've made {count} trades in 30 minutes. That may be excessive frequency."
+  },
+
+  "journal": {
+    "rationale.technical": "Technical setup",
+    "rationale.trend": "Trend following",
+    "rationale.support_resistance": "Support/Resistance",
+    "rationale.news": "News/Event",
+    "rationale.impulse": "Gut/Impulse",
+    "rationale.revenge": "Revenge trade",
+    "rationale.fomo": "FOMO",
+
+    "emotion.calm": "Calm",
+    "emotion.confident": "Confident",
+    "emotion.anxious": "Anxious",
+    "emotion.revenge": "Angry/Vengeful",
+    "emotion.greedy": "Greedy",
+    "emotion.bored": "Bored",
+
+    "insight.technique_vs_execution": "{count} trades entered on a sound rationale but lost because you didn't honor the stop. With the same rationale and stop honored, win rate was {win_rate}%. → The problem isn't technique, it's discipline (executing the stop).",
+    "insight.discipline_split": "Disciplined entries: {d_wr}% win rate (avg {d_pnl}%) vs impulsive entries: {i_wr}% win rate (avg {i_pnl}%). Impulsive trades are eating your account.",
+    "insight.worst_emotion": "Trades made while '{emotion}' average {avg_pnl}%, your worst. When you feel this way, stopping is the better move.",
+    "insight.insufficient": "Not enough records yet to find patterns. Keep logging your reviews.",
+    "label.unreliable": "insufficient sample"
+  },
+
+  "diagnostic": {
+    "type.gambling": "Gambling stage",
+    "type.mind_deficient": "Discipline-deficient",
+    "type.technique_deficient": "Technique-deficient",
+    "type.balanced": "Fairly balanced",
+
+    "headline.gambling": "Right now, neither your technique nor your discipline is in place.",
+    "headline.mind_deficient": "You have the technique — you just lose by not following it.",
+    "headline.technique_deficient": "Your mindset is solid, but you have no weapon to swing.",
+    "headline.balanced": "By self-diagnosis you look balanced. But—"
+  }
+}

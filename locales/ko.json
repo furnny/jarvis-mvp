@@ -1,0 +1,66 @@
+{
+  "_comment": "Korean user-facing strings. Placeholders use {name} for interpolation. Mirrors en.json key-for-key.",
+
+  "baseline": {
+    "metric.win_rate": "승률",
+    "metric.avg_pnl": "평균손익",
+    "metric.sl_coverage": "손절 커버리지",
+    "metric.median_leverage": "중앙 레버리지",
+    "metric.style_consistency": "스타일 일관성",
+
+    "drift.too_short": "'{style}' 스타일로 설정했지만 최근 거래의 절반 이상이 예상보다 짧습니다 (중앙 {hold}분). 조급하게 들어가고 있을 수 있습니다.",
+    "drift.too_long": "'{style}' 스타일 대비 보유가 길어지고 있습니다 (중앙 {hold}분). 손절을 미루고 있진 않나요?",
+    "drift.consistent": "선언한 '{style}' 스타일과 실제 거래가 일치합니다 (일관성 {consistency}).",
+
+    "flag.leverage": "평소 {usual}x인데 이번엔 {current}x — 당신 기준으로 과한 레버리지입니다.",
+    "flag.size": "평소보다 {ratio}배 큰 비중입니다.",
+    "flag.no_stop": "평소 {coverage}는 손절을 거는데 이번엔 없습니다."
+  },
+
+  "assess": {
+    "guardrail.ruin": "청산 시 자본의 {pct}%가 사라질 수 있습니다. 청산 확률과 무관하게, 이 노출 자체가 회복을 어렵게 합니다.",
+    "headline.volatility": "변동성 대비 청산이 가깝습니다. 여유를 두세요.",
+    "headline.structure": "포지션 설계를 점검하세요 (손절·레버리지).",
+    "headline.stable": "현재 리스크는 안정적입니다.",
+
+    "coaching.streak_size_strong": "연패 {streak}회 직후 평소 {size}배 비중으로 진입했습니다. 잠시 멈추는 걸 권합니다.",
+    "coaching.streak_mild": "연패 후 빠른 재진입입니다. 한 박자 쉬어가는 게 어떨까요?",
+    "coaching.size_mild": "평소보다 {size}배 큰 비중입니다. 의도한 크기가 맞나요?",
+    "coaching.freq_mild": "30분간 {count}회 거래 중입니다. 과도한 빈도일 수 있어요."
+  },
+
+  "journal": {
+    "rationale.technical": "기술적 셋업",
+    "rationale.trend": "추세 추종",
+    "rationale.support_resistance": "지지/저항",
+    "rationale.news": "뉴스/이벤트",
+    "rationale.impulse": "느낌/충동",
+    "rationale.revenge": "복수매매",
+    "rationale.fomo": "FOMO",
+
+    "emotion.calm": "평온",
+    "emotion.confident": "확신",
+    "emotion.anxious": "조급",
+    "emotion.revenge": "분노/복수",
+    "emotion.greedy": "과욕",
+    "emotion.bored": "지루함",
+
+    "insight.technique_vs_execution": "좋은 근거로 들어갔지만 손절을 안 지켜 진 거래 {count}건. 같은 근거로 손절을 지켰을 땐 승률 {win_rate}%. → 기법이 아니라 심법(손절 실행)이 문제입니다.",
+    "insight.discipline_split": "규율 있는 진입 승률 {d_wr}% (평균 {d_pnl}%) vs 충동적 진입 승률 {i_wr}% (평균 {i_pnl}%). 충동 거래가 계좌를 갉아먹고 있습니다.",
+    "insight.worst_emotion": "'{emotion}' 상태의 거래가 평균 {avg_pnl}%로 가장 나쁩니다. 이 감정일 땐 진입을 멈추는 게 유리합니다.",
+    "insight.insufficient": "아직 패턴을 찾기엔 기록이 적습니다. 복기를 계속 쌓아주세요.",
+    "label.unreliable": "표본부족·판단보류"
+  },
+
+  "diagnostic": {
+    "type.gambling": "도박 단계",
+    "type.mind_deficient": "심법형 부족",
+    "type.technique_deficient": "기법형 부족",
+    "type.balanced": "균형 잡힌 편",
+
+    "headline.gambling": "지금은 기법도 심법도 잡히지 않은 상태입니다.",
+    "headline.mind_deficient": "기법은 있는데, 그걸 못 지켜서 잃는 유형입니다.",
+    "headline.technique_deficient": "마음은 단단한데, 휘두를 무기가 없는 유형입니다.",
+    "headline.balanced": "자가진단상으론 균형이 잡혀 있습니다. 그런데—"
+  }
+}

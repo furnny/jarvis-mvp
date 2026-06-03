@@ -50,15 +50,17 @@ from app.telegram.state import pending_tags, violation_store
 
 log = logging.getLogger("jarvis.worker")
 
-# Behavior signals (loss streak, size-vs-avg) need a per-user trade feed.
-# A provider seam keeps the worker testable and lets us enrich this later
-# without touching the warning path. The MVP default is neutral, which means
-# coaching warnings stay quiet until a richer feed is wired — the safety-
-# critical DAMAGE GUARDRAIL works fully from position math regardless.
-BehaviorProvider = Callable[[int, str], BehaviorSignals]
+# Behavior signals (loss streak, re-entry speed, size-vs-usual) come from the
+# trader's own persisted history via behavior.TradeBehaviorProvider. The seam is
+# `(user_id, live_effective_leverage) -> BehaviorSignals`: history-derived parts
+# are cached/refreshed by the provider, the live leverage is the one input that
+# only the current position can supply. `neutral_behavior` is the fallback
+# (used in tests / before any history loads) — the safety-critical DAMAGE
+# GUARDRAIL works fully from position math regardless of behavior.
+BehaviorProvider = Callable[[int, float], BehaviorSignals]
 
 
-def neutral_behavior(_user_id: int, _symbol: str) -> BehaviorSignals:
+def neutral_behavior(_user_id: int, _live_effective_leverage: float) -> BehaviorSignals:
     return BehaviorSignals(recent_losses_streak=0, minutes_since_last_loss=999,
                            trades_last_30min=0, position_size_vs_avg=1.0)
 
@@ -77,6 +79,9 @@ class WorkerContext:
     sl_tracker: StopLossTracker
     vstore: ViolationStore = violation_store
     behavior_for: BehaviorProvider = neutral_behavior
+    # Optional cached provider; when set, poll_user keeps its per-user cache
+    # fresh (on an interval, not per-poll) and behavior_for reads from it.
+    behavior_provider: object | None = None
     # per-(user,symbol) last-seen state, for close detection + notebook prompts
     _seen: dict[tuple[int, str], _SeenPosition] = field(default_factory=dict)
 
@@ -127,8 +132,11 @@ async def process_snapshot(
             position_qty=pos.quantity,
         ))
 
-        # 2) assess → warnings, hysteresis-gated, then send (text only)
-        a = assess(m, acct, ctx.behavior_for(user_id, symbol), atr_pct=None)
+        # 2) assess → warnings, hysteresis-gated, then send (text only).
+        #    Behavior is derived from the user's own history (cached); the live
+        #    effective leverage is the bet-size input only this position knows.
+        behavior = ctx.behavior_for(user_id, m.effective_leverage)
+        a = assess(m, acct, behavior, atr_pct=None)
         msgs = warnings.build_warnings(a, lang=lang)
         for w in warnings.gate_warnings(ctx.vstore, user_id, symbol, msgs):
             chat = await _chat_id(user_id)
@@ -187,6 +195,22 @@ async def _chat_id(user_id: int) -> Optional[int]:
         return u.telegram_chat_id if u else None
 
 
+async def _trading_style(user_id: int):
+    """User's declared trading style, defaulting to SWING if unset/unknown."""
+    from app.core.baseline import TradingStyle
+    from app.db.base import get_sessionmaker
+    from app.db import models
+    from sqlalchemy import select
+    async with get_sessionmaker()() as s:
+        u = (await s.execute(
+            select(models.User).where(models.User.id == user_id)
+        )).scalar_one_or_none()
+    try:
+        return TradingStyle(u.trading_style) if u and u.trading_style else TradingStyle.SWING
+    except ValueError:
+        return TradingStyle.SWING
+
+
 # ── polling mechanism (the part that changes when we scale out) ──────────────
 
 async def poll_user(ctx: WorkerContext, user_id: int, *, lang: Optional[str] = None) -> None:
@@ -195,6 +219,13 @@ async def poll_user(ctx: WorkerContext, user_id: int, *, lang: Optional[str] = N
     creds = await load_credential(user_id)
     if creds is None:
         return
+
+    # Keep the user's behavioral baseline warm (DB load only when stale — the
+    # provider's interval guard makes this a no-op on most polls).
+    if ctx.behavior_provider is not None:
+        style = await _trading_style(user_id)
+        await ctx.behavior_provider.ensure_fresh(user_id, style)
+
     api_key, api_secret = creds
     client = make_exchange_client(
         get_settings().EXCHANGE, api_key, api_secret,

@@ -16,6 +16,7 @@ import logging
 from app.config import get_settings
 from app.services.stoploss_tracker import InMemorySLStore, StopLossTracker
 from app.telegram import handlers
+from app.telegram.behavior import TradeBehaviorProvider
 from app.telegram.notifier import PTBNotifier
 from app.telegram.scheduler import build_scheduler
 from app.telegram.worker import WorkerContext, run_forever
@@ -36,7 +37,15 @@ async def _amain() -> None:
 
     # NOTE (scaling boundary): a process-local StopLossTracker + the shared
     # state singletons are correct for the single-process MVP. See worker.py.
-    ctx = WorkerContext(notifier=notifier, sl_tracker=StopLossTracker(InMemorySLStore()))
+    # Real behavior signals from the user's own persisted history (cached,
+    # refreshed on an interval — not recomputed every poll).
+    behavior = TradeBehaviorProvider()
+    ctx = WorkerContext(
+        notifier=notifier,
+        sl_tracker=StopLossTracker(InMemorySLStore()),
+        behavior_for=behavior.signals,
+        behavior_provider=behavior,
+    )
 
     scheduler = build_scheduler(notifier)
 

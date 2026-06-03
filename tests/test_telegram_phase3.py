@@ -172,3 +172,48 @@ def test_daily_no_trades_is_text_only():
     png, caption = daily_mod.build_daily(
         {"overall": {"n": 0}}, {"equity": []}, {}, date_label="2026-01-15", lang="en")
     assert png is None and caption
+
+
+# ── 6) real behavior provider derives impulse signals from persisted trades ──
+
+def test_behavior_provider_from_persisted_trades(app_db):
+    from datetime import timedelta
+    from app.core.baseline import TradingStyle
+    from app.core.trade_analyzer import Trade
+    from app.db.persistence import persist_trades
+    from app.telegram.behavior import TradeBehaviorProvider
+    from app.web.services import consume_magic_link_token, create_magic_link_token
+
+    async def go():
+        uid = await consume_magic_link_token(await create_magic_link_token("b@x.com"))
+        now = datetime.now(timezone.utc)
+
+        def mk(mins_ago, pnl, lev):
+            ex = now - timedelta(minutes=mins_ago)
+            return Trade("BTCUSDT", "LONG", ex - timedelta(minutes=5), ex,
+                         pnl_pct=pnl, leverage=lev, size_vs_avg=1.0, had_stop_loss=True)
+
+        # usual leverage ~5x; last three trades are losses, last loss 4 min ago
+        await persist_trades(uid, [
+            mk(120, 2.0, 5), mk(90, 1.5, 5), mk(20, -1.0, 5),
+            mk(12, -2.0, 5), mk(4, -1.5, 5),
+        ])
+
+        provider = TradeBehaviorProvider()
+        await provider.ensure_fresh(uid, TradingStyle.SWING)
+        # live position at 14x effective leverage → ~2.8x usual size
+        sig = provider.signals(uid, live_effective_leverage=14.0)
+        assert sig.recent_losses_streak == 3
+        assert sig.minutes_since_last_loss <= 10
+        assert sig.position_size_vs_avg > 2.0  # betting much bigger than usual
+
+        # feed into the real scorer → impulse coaching must fire
+        from app.core.jarvis_assess import assess
+        from app.core.jarvis_score import AccountContext
+        from app.core.risk_math import PositionInput, Side, compute_risk, D
+        eq = D("10000")
+        pos = PositionInput("BTCUSDT", Side.LONG, D("4"), D("50000"), D("50000"),
+                            D("14"), D("47000"), D("0"), D("49000"))
+        a = assess(compute_risk(pos, eq), AccountContext(eq, 10, 40), sig, atr_pct=4.0)
+        assert a.coaching.triggered
+    _run(go())

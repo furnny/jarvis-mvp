@@ -42,6 +42,25 @@ class Settings(BaseSettings):
     # futures READ with futures TRADE — see app/web/key_validation.py).
     ALLOW_FUTURES_TRADE_KEYS: bool = True
 
+    # — Email: Resend (magic-link delivery) —
+    RESEND_API_KEY: str | None = None
+    EMAIL_FROM: str = "Jarvis <no-reply@jarvis.example>"
+
+    # — Telegram (Phase 3) —
+    TELEGRAM_BOT_TOKEN: str | None = None
+    # Worker polling interval (seconds) for real-time warning detection.
+    # 30s reasoning: Binance /fapi/v2/account costs weight=5; at 30s that's
+    # ~10 weight/min per user, leaving headroom under the ~2400/min IP cap
+    # (≈240 users on one IP before the global limiter throttles). It's also
+    # fast enough to warn before a meaningful adverse move on a no-stop
+    # position. Tune down toward 15s for fewer users / more urgency.
+    WORKER_POLL_INTERVAL_SEC: int = 30
+    # Scheduled-job local times (24h, user-local approximation via TZ below).
+    DAILY_SUMMARY_HOUR: int = 23
+    WEEKLY_MIRROR_DOW: str = "sun"
+    WEEKLY_MIRROR_HOUR: int = 20
+    SCHEDULER_TZ: str = "Asia/Seoul"
+
     # — Misc —
     SQL_ECHO: bool = False
 

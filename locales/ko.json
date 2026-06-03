@@ -1,34 +1,28 @@
 {
   "_comment": "Korean user-facing strings. Placeholders use {name} for interpolation. Mirrors en.json key-for-key.",
-
   "baseline": {
     "metric.win_rate": "승률",
     "metric.avg_pnl": "평균손익",
     "metric.sl_coverage": "손절 커버리지",
     "metric.median_leverage": "중앙 레버리지",
     "metric.style_consistency": "스타일 일관성",
-
     "drift.too_short": "'{style}' 스타일로 설정했지만 최근 거래의 절반 이상이 예상보다 짧습니다 (중앙 {hold}분). 조급하게 들어가고 있을 수 있습니다.",
     "drift.too_long": "'{style}' 스타일 대비 보유가 길어지고 있습니다 (중앙 {hold}분). 손절을 미루고 있진 않나요?",
     "drift.consistent": "선언한 '{style}' 스타일과 실제 거래가 일치합니다 (일관성 {consistency}).",
-
     "flag.leverage": "평소 {usual}x인데 이번엔 {current}x — 당신 기준으로 과한 레버리지입니다.",
     "flag.size": "평소보다 {ratio}배 큰 비중입니다.",
     "flag.no_stop": "평소 {coverage}는 손절을 거는데 이번엔 없습니다."
   },
-
   "assess": {
     "guardrail.ruin": "청산 시 자본의 {pct}%가 사라질 수 있습니다. 청산 확률과 무관하게, 이 노출 자체가 회복을 어렵게 합니다.",
     "headline.volatility": "변동성 대비 청산이 가깝습니다. 여유를 두세요.",
     "headline.structure": "포지션 설계를 점검하세요 (손절·레버리지).",
     "headline.stable": "현재 리스크는 안정적입니다.",
-
     "coaching.streak_size_strong": "연패 {streak}회 직후 평소 {size}배 비중으로 진입했습니다. 잠시 멈추는 걸 권합니다.",
     "coaching.streak_mild": "연패 후 빠른 재진입입니다. 한 박자 쉬어가는 게 어떨까요?",
     "coaching.size_mild": "평소보다 {size}배 큰 비중입니다. 의도한 크기가 맞나요?",
     "coaching.freq_mild": "30분간 {count}회 거래 중입니다. 과도한 빈도일 수 있어요."
   },
-
   "journal": {
     "rationale.technical": "기술적 셋업",
     "rationale.trend": "추세 추종",
@@ -37,32 +31,27 @@
     "rationale.impulse": "느낌/충동",
     "rationale.revenge": "복수매매",
     "rationale.fomo": "FOMO",
-
     "emotion.calm": "평온",
     "emotion.confident": "확신",
     "emotion.anxious": "조급",
     "emotion.revenge": "분노/복수",
     "emotion.greedy": "과욕",
     "emotion.bored": "지루함",
-
     "insight.technique_vs_execution": "좋은 근거로 들어갔지만 손절을 안 지켜 진 거래 {count}건. 같은 근거로 손절을 지켰을 땐 승률 {win_rate}%. → 기법이 아니라 심법(손절 실행)이 문제입니다.",
     "insight.discipline_split": "규율 있는 진입 승률 {d_wr}% (평균 {d_pnl}%) vs 충동적 진입 승률 {i_wr}% (평균 {i_pnl}%). 충동 거래가 계좌를 갉아먹고 있습니다.",
     "insight.worst_emotion": "'{emotion}' 상태의 거래가 평균 {avg_pnl}%로 가장 나쁩니다. 이 감정일 땐 진입을 멈추는 게 유리합니다.",
     "insight.insufficient": "아직 패턴을 찾기엔 기록이 적습니다. 복기를 계속 쌓아주세요.",
     "label.unreliable": "표본부족·판단보류"
   },
-
   "diagnostic": {
     "type.gambling": "도박 단계",
     "type.mind_deficient": "심법형 부족",
     "type.technique_deficient": "기법형 부족",
     "type.balanced": "균형 잡힌 편",
-
     "headline.gambling": "지금은 기법도 심법도 잡히지 않은 상태입니다.",
     "headline.mind_deficient": "기법은 있는데, 그걸 못 지켜서 잃는 유형입니다.",
     "headline.technique_deficient": "마음은 단단한데, 휘두를 무기가 없는 유형입니다.",
     "headline.balanced": "자가진단상으론 균형이 잡혀 있습니다. 그런데—",
-
     "intro": "데이터 없이 빠르게 5문항. 임시 진단이며, 거래를 연결하면 진짜 진단이 나옵니다.",
     "scale.often": "자주",
     "scale.sometimes": "가끔",
@@ -74,7 +63,6 @@
     "q.size_control": "확신이 들어도 크게 베팅하지 않고 비중을 일정하게 유지한다.",
     "cta.connect": "정확한 진단을 위해 거래소를 읽기 전용으로 연결하세요."
   },
-
   "keys": {
     "rejected.title": "이 키는 거부되었습니다.",
     "rejected.reason": "읽기 전용 키만 허용됩니다. 이 키에는 아직 다음 권한이 있습니다: {violations}. 해당 권한을 제거하고(읽기 권한만 남기고) 다시 시도하세요.",
@@ -84,12 +72,55 @@
     "rejected.margin": "마진 대출",
     "rejected.futures_trade": "선물 거래",
     "unreachable": "키 확인을 위해 거래소에 연결하지 못했습니다. 키를 확인하고 다시 시도하세요.",
-    "accepted": "읽기 전용 키로 확인되어 안전하게 저장했습니다."
+    "accepted": "읽기 전용 키로 확인되어 안전하게 저장했습니다.",
+    "guidance.title": "연결 전에 — 이것부터 읽으세요",
+    "guidance.why": "Jarvis는 계좌를 '읽기'만 합니다 — 주문을 넣거나 취소·수정하지 않습니다. 다만 바이낸스에서는 선물 포지션을 읽는 권한이 선물 거래 권한과 분리되지 않습니다. 그래서 가장 안전한 조치는 이 키를 저희 서버 IP로 묶는 것입니다.",
+    "guidance.ip.headline": "이 키를 IP 주소로 제한하세요 (강력 권장)",
+    "guidance.ip.body": "IP 제한 키는 화이트리스트에 등록한 주소에서만 작동합니다. 키가 유출돼도 다른 곳에서는 쓸 수 없습니다.",
+    "guidance.ip.step1": "바이낸스 API 관리에서 키를 열고 \"신뢰할 수 있는 IP에서만 접근 허용\"을 켜세요.",
+    "guidance.ip.step2": "설정 중 표시되는 Jarvis 서버 IP를 화이트리스트에 추가하세요.",
+    "guidance.ip.step3": "\"출금 사용\"은 반드시 꺼두세요. 출금 가능한 키는 Jarvis가 거부합니다.",
+    "guidance.ip.not_set": "이 키는 IP 제한이 걸려 있지 않습니다. 작동은 하지만, 저희 서버 IP로 묶는 것을 강력히 권장합니다 — 설정 가이드를 참고하세요. 출금은 어떤 경우에도 차단됩니다.",
+    "guidance.advisory_only": "Jarvis는 조언만 합니다. 분석하고 경고할 뿐, 대신 거래하지 않습니다."
   },
-
   "telegram": {
     "link.instructions": "텔레그램을 열고 봇에게 이 메시지를 보내 알림을 연결하세요: /start {code}",
     "link.connected": "텔레그램이 연결되었습니다. 여기로 알림을 받게 됩니다.",
-    "link.invalid": "링크 코드가 유효하지 않거나 만료되었습니다. 웹에서 새로 발급하세요."
+    "link.invalid": "링크 코드가 유효하지 않거나 만료되었습니다. 웹에서 새로 발급하세요.",
+    "start.welcome": "Jarvis가 연결되었습니다. 당신의 거래 데이터에 근거해, 규율이 무너지려는 순간 바로 경고하겠습니다.",
+    "start.already_linked": "이미 연결된 계정입니다. 준비 완료됐습니다.",
+    "warning.coaching.header": "⚠️ 잠깐 — 멈추는 걸 권합니다",
+    "warning.guardrail.header": "🛑 피해 한도 경고",
+    "warning.footer": "일반론이 아니라, 당신의 데이터입니다.",
+    "notebook.prompt": "{symbol} {side} 종료 · {pnl}\n한 가지만 — 왜 들어갔었나요? (탭 한 번)",
+    "notebook.section.rationale": "진입 근거",
+    "notebook.section.emotion": "그때 감정은",
+    "notebook.saved": "기록됨: {label}. 그 탭 한 번이 규율 훈련입니다.",
+    "notebook.note_saved": "한 줄 메모를 오답노트에 저장했습니다.",
+    "daily.header": "📔 오늘의 복기 · {date}",
+    "daily.chip.trades": "거래 {n}건",
+    "daily.chip.winrate": "승률 {wr}%",
+    "daily.chip.pnl": "손익 {pnl}",
+    "daily.no_trades": "오늘은 거래가 없었습니다. 기다림도 하나의 포지션입니다.",
+    "daily.conclusion.impulse_drag": "오늘 거래 중 {count}건이 충동 진입이었고, 그것만으로 {impulse_pnl}였습니다. 규율 있는 거래는 {disciplined_pnl}였고요. 기법이 문제가 아니었습니다 — 충동 거래가 문제였습니다.",
+    "daily.conclusion.clean": "오늘은 충동 진입이 없었습니다. 이것이 규율의 모습입니다.",
+    "daily.conclusion.insufficient": "규율 vs 충동을 나누기엔 태깅된 거래가 아직 적습니다. 계속 기록해주세요.",
+    "weekly.header": "🪞 이번 주 거울",
+    "weekly.subhead.worse": "지난주보다 무너지고 있습니다.",
+    "weekly.subhead.better": "지난주보다 단단해졌습니다. 이대로 유지하세요.",
+    "weekly.subhead.mixed": "지난주 대비 엇갈린 한 주였습니다.",
+    "weekly.metric.winrate": "승률",
+    "weekly.metric.sl": "손절 준수",
+    "weekly.metric.leverage": "평균 레버리지",
+    "weekly.conclusion.sl_drop": "손절 준수가 {prev}%에서 {curr}%로 떨어졌습니다. 기법이 아니라 실행의 문제입니다. 심법이 흔들리고 있습니다.",
+    "weekly.conclusion.generic": "지난주 대비 지표가 움직였습니다. 전체 그림은 웹에서 확인하세요.",
+    "weekly.web_button": "웹에서 자세히 보기 →",
+    "chart.equity": "자본",
+    "chart.last_week": "지난주",
+    "chart.this_week": "이번주"
+  },
+  "email": {
+    "magic_link.subject": "Jarvis 로그인 링크",
+    "magic_link.body": "탭하여 Jarvis에 로그인하세요 (15분 후 만료):\n\n{link}\n\n요청한 적이 없다면 이 메일은 무시하세요."
   }
 }

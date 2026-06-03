@@ -111,6 +111,15 @@ async def consume_telegram_link_code(code: str, chat_id: int) -> bool:
         return True
 
 
+async def user_id_for_chat(chat_id: int) -> int | None:
+    """Resolve a linked user id from a Telegram chat id (bot-side lookups)."""
+    async with get_sessionmaker()() as s:
+        user = (await s.execute(
+            select(models.User).where(models.User.telegram_chat_id == chat_id)
+        )).scalar_one_or_none()
+        return user.id if user else None
+
+
 async def set_trading_style(user_id: int, style: str) -> None:
     async with get_sessionmaker()() as s:
         user = (await s.execute(

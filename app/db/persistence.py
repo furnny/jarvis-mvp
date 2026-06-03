@@ -12,12 +12,14 @@ from typing import Optional, Sequence
 
 from app.core.crypto import CredentialVault, MasterKeyProvider
 from app.core.baseline import Baseline
+from app.core.journal import JournalEntry
 from app.core.trade_analyzer import Trade
 from app.config import get_settings
 from app.db.base import get_sessionmaker
 from app.db.stores import (
     PostgresCredentialStore,
     PostgresTradeStore,
+    PostgresJournalStore,
     PostgresBaselineStore,
 )
 
@@ -59,3 +61,17 @@ async def persist_trades(user_id: int, trades: Sequence[Trade]) -> int:
 async def persist_baseline(user_id: int, baseline: Baseline) -> None:
     store = PostgresBaselineStore(get_sessionmaker())
     await store.save_baseline(user_id, baseline)
+
+
+async def get_journal_entry(user_id: int, trade_id: str) -> Optional[JournalEntry]:
+    """Load one journal entry by trade_id (for merging notebook taps)."""
+    store = PostgresJournalStore(get_sessionmaker())
+    for e in await store.get_entries(user_id):
+        if e.trade_id == trade_id:
+            return e
+    return None
+
+
+async def save_journal_entry(user_id: int, entry: JournalEntry) -> None:
+    store = PostgresJournalStore(get_sessionmaker())
+    await store.save_entry(user_id, entry)

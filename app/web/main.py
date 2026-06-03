@@ -115,6 +115,30 @@ async def diagnostic_submit(body: DiagnosticIn, lang: str | None = None):
 
 # ── read-only API key input ──────────────────────────────────────────────────
 
+@app.get("/api/keys/guidance")
+async def keys_guidance(lang: str | None = None):
+    """Prominent security guidance shown ALONGSIDE the key-input form, not buried.
+
+    Because Binance couples futures-read with futures-trade (see
+    key_validation.py), the IP-whitelist is the user's real mitigation. We
+    surface it as the headline of the key-input UI, with concrete steps.
+    """
+    return {
+        "title": t("keys.guidance.title", lang=lang),
+        "why": t("keys.guidance.why", lang=lang),
+        "ip_whitelist": {
+            "headline": t("keys.guidance.ip.headline", lang=lang),
+            "body": t("keys.guidance.ip.body", lang=lang),
+            "steps": [
+                t("keys.guidance.ip.step1", lang=lang),
+                t("keys.guidance.ip.step2", lang=lang),
+                t("keys.guidance.ip.step3", lang=lang),
+            ],
+        },
+        "advisory_only": t("keys.guidance.advisory_only", lang=lang),
+    }
+
+
 @app.post("/api/keys")
 async def add_keys(
     body: KeysIn, lang: str | None = None, user_id: int = Depends(current_user_id)
@@ -139,7 +163,14 @@ async def add_keys(
         user_id, body.api_key, body.api_secret,
         exchange=body.exchange, permissions=["read"],
     )
-    return {"accepted": True, "message": t("keys.accepted", lang=lang)}
+
+    # 4) If the key is NOT IP-restricted, surface the whitelist guidance loudly.
+    #    A futures key necessarily carries trade capability — IP-whitelisting is
+    #    the user's strongest mitigation, so we don't let it stay buried.
+    resp = {"accepted": True, "message": t("keys.accepted", lang=lang)}
+    if not perms.ip_restricted:
+        resp["ip_whitelist_warning"] = t("keys.guidance.ip.not_set", lang=lang)
+    return resp
 
 
 # ── telegram chat linking ────────────────────────────────────────────────────

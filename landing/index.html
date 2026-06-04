@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── SEO / Open Graph (shareable result cards use URL hash) ── -->
+  <title>Jarvis — 트레이더 자가진단 | Trader Self-Diagnostic</title>
+  <meta name="description"
+    content="5문항으로 내 거래의 약한 고리를 찾는다. 기법형·심법형·도박형·균형형 / Find your trading weak link in 5 questions." />
+  <meta property="og:title" content="Jarvis 트레이더 자가진단" />
+  <meta property="og:description"
+    content="기법(Technique)과 심법(Discipline) — 어느 쪽이 무너지고 있나? 5문항으로 확인하세요." />
+  <meta property="og:image" content="https://jarvis-trading.vercel.app/og.png" />
+  <meta property="og:url" content="https://jarvis-trading.vercel.app/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- ── Vercel Analytics (paste Vercel snippet here after deploy) ── -->
+  <!-- <script defer src="/_vercel/insights/script.js"></script> -->
+
+  <!-- ── Google Analytics 4 — replace G-XXXXXXXX with your ID ── -->
+  <!--
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXX');
+  </script>
+  -->
+
+  <style>
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ── Tokens ─────────────────────────────────────────────────── */
+    :root {
+      --ink:       #1c2330;
+      --ink-soft:  #4a5568;
+      --surface:   #ffffff;
+      --bg:        #f7f8fa;
+      --border:    #e2e8f0;
+      --blue:      #2f6df0;
+      --blue-dark: #1a50c8;
+      --green:     #1f9d6b;
+      --red:       #d65a4a;
+      --gold:      #c9920a;
+      --radius:    10px;
+      --shadow:    0 2px 12px rgba(0,0,0,.08);
+      --max-w:     640px;
+    }
+
+    /* ── Base ───────────────────────────────────────────────────── */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .page { max-width: var(--max-w); margin: 0 auto; padding: 0 20px 80px; }
+
+    /* ── Header / nav ───────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 24px;
+    }
+    .logo { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.4px; }
+    .logo span { color: var(--blue); }
+
+    .lang-toggle {
+      display: flex;
+      background: var(--border);
+      border-radius: 20px;
+      padding: 3px;
+      gap: 0;
+    }
+    .lang-toggle button {
+      background: none;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: .82rem;
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-weight: 500;
+      transition: background .15s, color .15s;
+    }
+    .lang-toggle button.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    }
+
+    /* ── Hero ───────────────────────────────────────────────────── */
+    .hero { padding: 32px 0 40px; text-align: center; }
+    .hero h1 {
+      font-size: clamp(1.55rem, 4.5vw, 2.1rem);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+    .hero h1 em { font-style: normal; color: var(--blue); }
+    .hero p {
+      color: var(--ink-soft);
+      font-size: .97rem;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+    .badge {
+      display: inline-block;
+      background: #eef3ff;
+      color: var(--blue);
+      font-size: .78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      letter-spacing: .2px;
+    }
+
+    /* ── Quiz card ──────────────────────────────────────────────── */
+    #quiz {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px 28px;
+    }
+
+    /* progress bar */
+    .progress-wrap { margin-bottom: 24px; }
+    .progress-label {
+      font-size: .8rem;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width .35s ease;
+    }
+
+    /* question */
+    .q-step { display: none; }
+    .q-step.active { display: block; }
+
+    .q-num {
+      font-size: .78rem;
+      color: var(--blue);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+    }
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.45;
+      margin-bottom: 22px;
+    }
+
+    /* answer buttons */
+    .answer-grid { display: flex; flex-direction: column; gap: 10px; }
+    .ans-btn {
+      width: 100%;
+      padding: 13px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      text-align: left;
+      font-size: .95rem;
+      cursor: pointer;
+      color: var(--ink);
+      transition: border-color .15s, background .15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ans-btn:hover { border-color: var(--blue); background: #f0f5ff; }
+    .ans-btn.selected { border-color: var(--blue); background: #eef3ff; font-weight: 600; }
+    .ans-icon { font-size: 1.1rem; min-width: 24px; text-align: center; }
+
+    .btn-next {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-next:hover { background: var(--blue-dark); }
+    .btn-next:disabled { opacity: .4; cursor: default; }
+
+    /* ── Result card ────────────────────────────────────────────── */
+    #result { display: none; }
+
+    .result-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .result-header {
+      padding: 28px 28px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-type-tag {
+      display: inline-block;
+      font-size: .8rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .tag-gambling          { background: #fde8e8; color: var(--red); }
+    .tag-mind_deficient    { background: #fff3e0; color: #b06000; }
+    .tag-technique_deficient { background: #e8f4fd; color: #1a6090; }
+    .tag-balanced          { background: #e6f9f1; color: var(--green); }
+
+    .result-headline {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: -.3px;
+    }
+
+    .result-axes {
+      padding: 20px 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .axis-block { display: flex; flex-direction: column; gap: 6px; }
+    .axis-label { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-soft); }
+    .axis-bar-wrap { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .axis-bar { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    .axis-bar.technique { background: var(--blue); }
+    .axis-bar.discipline { background: var(--green); }
+    .axis-score { font-size: .85rem; font-weight: 700; }
+
+    .result-body {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-description { font-size: .93rem; color: var(--ink-soft); line-height: 1.65; }
+
+    /* ── Waitlist / CTA ─────────────────────────────────────────── */
+    .waitlist-block {
+      padding: 24px 28px;
+      background: #f8faff;
+    }
+    .waitlist-label {
+      font-size: .93rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .waitlist-sub {
+      font-size: .85rem;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+      line-height: 1.55;
+    }
+
+    /* Formspree form */
+    .email-form { display: flex; gap: 8px; }
+    .email-form input[type=email] {
+      flex: 1;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: .93rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .email-form input[type=email]:focus { border-color: var(--blue); }
+    .email-form button {
+      padding: 11px 20px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: .93rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .email-form button:hover { background: var(--blue-dark); }
+    .form-success {
+      display: none;
+      background: #e6f9f1;
+      color: var(--green);
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    /* ── Share strip ────────────────────────────────────────────── */
+    .share-strip {
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+    }
+    .share-label { font-size: .85rem; color: var(--ink-soft); margin-right: 4px; }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: .83rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--ink);
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .share-btn:hover { border-color: var(--blue); background: #f0f5ff; }
+    .share-btn.copy-btn { cursor: pointer; }
+
+    /* ── Redo ───────────────────────────────────────────────────── */
+    .btn-redo {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      font-size: .85rem;
+      color: var(--ink-soft);
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: .78rem;
+      color: #9ba6b4;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 420px) {
+      .email-form { flex-direction: column; }
+      .result-axes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header>
+    <div class="logo">Jarvis<span>.</span></div>
+    <div class="lang-toggle">
+      <button id="btn-ko" class="active" onclick="setLang('ko')">한국어</button>
+      <button id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </header>
+
+  <!-- ── Hero ────────────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="badge" data-ko="⏱ 2분 · 5문항" data-en="⏱ 2 min · 5 questions">⏱ 2분 · 5문항</div>
+    <h1 data-ko="당신은 왜 지고 있나요?<br><em>기법</em> 문제인가, <em>심법</em> 문제인가"
+        data-en="Why are you losing?<br>Is it your <em>technique</em> or your <em>discipline</em>?">
+      당신은 왜 지고 있나요?<br><em>기법</em> 문제인가, <em>심법</em> 문제인가
+    </h1>
+    <p data-ko="데이터 없이 빠르게 5문항. 임시 진단이며, 거래를 연결하면 진짜 진단이 나옵니다."
+       data-en="Five quick questions — no data needed yet. This is a tentative read; the real diagnosis comes once you connect your trades.">
+      데이터 없이 빠르게 5문항. 임시 진단이며, 거래를 연결하면 진짜 진단이 나옵니다.
+    </p>
+  </div>
+
+  <!-- ── Quiz ────────────────────────────────────────────────────── -->
+  <div id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-text" data-ko="0 / 5 완료" data-en="0 of 5 answered">0 / 5 완료</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="q-step active" data-step="0">
+      <div class="q-num" data-ko="질문 1 / 5" data-en="Question 1 / 5">질문 1 / 5</div>
+      <div class="q-text"
+           data-ko="검증된 우위(엣지)가 있는 셋업을 반복해서 거래한다."
+           data-en="I have a setup with a verifiable edge that I trade repeatedly.">
+        검증된 우위(엣지)가 있는 셋업을 반복해서 거래한다.
+      </div>
+      <div class="answer-grid">
+        <button class="ans-btn" data-value="often">
+          <span class="ans-icon">✅</span>
+          <span data-ko="자주" data-en="Often">자주</span>
+        </button>
+        <button class="ans-btn" data-value="sometimes">
+          <span class="ans-icon">🤔</span>
+          <span data-ko="가끔" data-en="Sometimes">가끔</span>
+        </button>
+        <button class="ans-btn" data-value="rarely">
+          <span class="ans-icon">❌</span>
+          <span data-ko="거의 안 함" data-en="Rarely">거의 안 함</span>
+        </button>
+      </div>
+      <button class="btn-next" disabled
+              data-ko="다음 질문 →" data-en="Next →" onclick="nextQ()">다음 질문 →</button>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-step" data-step="1">
+      <div class="q-num" data-ko="질문 2 / 5" data-en="Question 2 / 5">질문 2 / 5</div>
+      <div class="q-text"
+           data-ko="진입 전에 나갈 자리(목표가·손절가)를 미리 정해둔다."
+           data-en="Before entering, I've decided where I'll exit (target and stop).">
+        진입 전에 나갈 자리(목표가·손절가)를 미리 정해둔다.
+      </div>
+      <div class="answer-grid">
+        <button class="ans-btn" data-value="often"><span class="ans-icon">✅</span><span data-ko="자주" data-en="Often">자주</span></button>
+        <button class="ans-btn" data-value="sometimes"><span class="ans-icon">🤔</span><span data-ko="가끔" data-en="Sometimes">가끔</span></button>
+        <button class="ans-btn" data-value="rarely"><span class="ans-icon">❌</span><span data-ko="거의 안 함" data-en="Rarely">거의 안 함</span></button>
+      </div>
+      <button class="btn-next" disabled data-ko="다음 질문 →" data-en="Next →" onclick="nextQ()">다음 질문 →</button>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-step" data-step="2">
+      <div class="q-num" data-ko="질문 3 / 5" data-en="Question 3 / 5">질문 3 / 5</div>
+      <div class="q-text"
+           data-ko="손절가에 닿으면 실제로 손절을 실행한다."
+           data-en="When price hits my stop, I actually cut the loss.">
+        손절가에 닿으면 실제로 손절을 실행한다.
+      </div>
+      <div class="answer-grid">
+        <button class="ans-btn" data-value="often"><span class="ans-icon">✅</span><span data-ko="자주" data-en="Often">자주</span></button>
+        <button class="ans-btn" data-value="sometimes"><span class="ans-icon">🤔</span><span data-ko="가끔" data-en="Sometimes">가끔</span></button>
+        <button class="ans-btn" data-value="rarely"><span class="ans-icon">❌</span><span data-ko="거의 안 함" data-en="Rarely">거의 안 함</span></button>
+      </div>
+      <button class="btn-next" disabled data-ko="다음 질문 →" data-en="Next →" onclick="nextQ()">다음 질문 →</button>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-step" data-step="3">
+      <div class="q-num" data-ko="질문 4 / 5" data-en="Question 4 / 5">질문 4 / 5</div>
+      <div class="q-text"
+           data-ko="손실 직후, 만회하려고 곧바로 다시 들어간다."
+           data-en="Right after a loss, I jump back in to win it back.">
+        손실 직후, 만회하려고 곧바로 다시 들어간다.
+      </div>
+      <div class="answer-grid">
+        <button class="ans-btn" data-value="often"><span class="ans-icon">✅</span><span data-ko="자주" data-en="Often">자주</span></button>
+        <button class="ans-btn" data-value="sometimes"><span class="ans-icon">🤔</span><span data-ko="가끔" data-en="Sometimes">가끔</span></button>
+        <button class="ans-btn" data-value="rarely"><span class="ans-icon">❌</span><span data-ko="거의 안 함" data-en="Rarely">거의 안 함</span></button>
+      </div>
+      <button class="btn-next" disabled data-ko="다음 질문 →" data-en="Next →" onclick="nextQ()">다음 질문 →</button>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-step" data-step="4">
+      <div class="q-num" data-ko="질문 5 / 5" data-en="Question 5 / 5">질문 5 / 5</div>
+      <div class="q-text"
+           data-ko="확신이 들어도 크게 베팅하지 않고 비중을 일정하게 유지한다."
+           data-en="I keep my position size consistent instead of betting big on conviction.">
+        확신이 들어도 크게 베팅하지 않고 비중을 일정하게 유지한다.
+      </div>
+      <div class="answer-grid">
+        <button class="ans-btn" data-value="often"><span class="ans-icon">✅</span><span data-ko="자주" data-en="Often">자주</span></button>
+        <button class="ans-btn" data-value="sometimes"><span class="ans-icon">🤔</span><span data-ko="가끔" data-en="Sometimes">가끔</span></button>
+        <button class="ans-btn" data-value="rarely"><span class="ans-icon">❌</span><span data-ko="거의 안 함" data-en="Rarely">거의 안 함</span></button>
+      </div>
+      <button class="btn-next" disabled data-ko="결과 보기 →" data-en="See result →" onclick="submit()">결과 보기 →</button>
+    </div>
+  </div>
+
+  <!-- ── Result ───────────────────────────────────────────────────── -->
+  <div id="result">
+    <div class="result-card">
+
+      <!-- header: type + headline -->
+      <div class="result-header">
+        <div class="result-type-tag" id="result-tag"></div>
+        <div class="result-headline" id="result-headline"></div>
+      </div>
+
+      <!-- axes: two bars -->
+      <div class="result-axes">
+        <div class="axis-block">
+          <div class="axis-label" data-ko="기법 (Technique)" data-en="Technique">기법 (Technique)</div>
+          <div class="axis-bar-wrap"><div class="axis-bar technique" id="bar-technique" style="width:0%"></div></div>
+          <div class="axis-score" id="score-technique"></div>
+        </div>
+        <div class="axis-block">
+          <div class="axis-label" data-ko="심법 (Discipline)" data-en="Discipline">심법 (Discipline)</div>
+          <div class="axis-bar-wrap"><div class="axis-bar discipline" id="bar-discipline" style="width:0%"></div></div>
+          <div class="axis-score" id="score-discipline"></div>
+        </div>
+      </div>
+
+      <!-- body: description per type -->
+      <div class="result-body">
+        <div class="result-description" id="result-description"></div>
+      </div>
+
+      <!-- waitlist -->
+      <div class="waitlist-block">
+        <div class="waitlist-label"
+             data-ko="📬 런칭 알림 받기"
+             data-en="📬 Get notified at launch">📬 런칭 알림 받기</div>
+        <div class="waitlist-sub"
+             data-ko="자가진단이 아닌, 내 거래 기록으로 만드는 진짜 진단. 런칭 시 가장 먼저 알려드립니다."
+             data-en="The real diagnosis — built from your own trade data, not a self-assessment. Be first to know when we launch.">
+          자가진단이 아닌, 내 거래 기록으로 만드는 진짜 진단. 런칭 시 가장 먼저 알려드립니다.
+        </div>
+
+        <!--
+          ────────────────────────────────────────────────────────────────
+          SETUP: Replace "YOUR_FORMSPREE_ID" with your actual form ID.
+          Instructions in the README / deploy guide below.
+          ────────────────────────────────────────────────────────────────
+        -->
+        <form class="email-form" id="waitlist-form"
+              action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+              method="POST">
+          <input type="hidden" name="result_type" id="hidden-result-type" />
+          <input type="hidden" name="lang" id="hidden-lang" value="ko" />
+          <input type="email" name="email" required
+                 placeholder="이메일 주소"
+                 id="email-input"
+                 data-placeholder-ko="이메일 주소"
+                 data-placeholder-en="Email address" />
+          <button type="submit"
+                  data-ko="등록하기"
+                  data-en="Notify me">등록하기</button>
+        </form>
+        <div class="form-success" id="form-success"
+             data-ko="✓ 등록되었습니다. 런칭 시 알려드리겠습니다!"
+             data-en="✓ You're on the list! We'll reach out when we launch.">
+          ✓ 등록되었습니다. 런칭 시 알려드리겠습니다!
+        </div>
+      </div>
+
+      <!-- share strip -->
+      <div class="share-strip">
+        <span class="share-label" data-ko="공유:" data-en="Share:">공유:</span>
+        <a class="share-btn" id="share-twitter" href="#" target="_blank" rel="noopener">
+          𝕏 Twitter
+        </a>
+        <button class="share-btn copy-btn" id="share-copy"
+                data-ko="링크 복사" data-en="Copy link">링크 복사</button>
+      </div>
+
+    </div>
+
+    <button class="btn-redo"
+            data-ko="다시 해보기" data-en="Start over" onclick="redo()">다시 해보기</button>
+  </div>
+
+  <footer>
+    <p data-ko="Jarvis — 트레이더를 위한 규율 코치" data-en="Jarvis — Discipline coach for traders">
+      Jarvis — 트레이더를 위한 규율 코치
+    </p>
+  </footer>
+
+</div><!-- .page -->
+
+<script>
+  /* ── State ─────────────────────────────────────────────────────── */
+  let lang = 'ko';
+  let currentStep = 0;
+  const answers = {}; // { has_edge, plan_exit, cut_losses, revenge, size_control }
+
+  const QUESTION_IDS = ['has_edge', 'plan_exit', 'cut_losses', 'revenge', 'size_control'];
+  const TOTAL = QUESTION_IDS.length;
+
+  /* ── i18n ───────────────────────────────────────────────────────── */
+  function setLang(l) {
+    lang = l;
+    document.documentElement.lang = (l === 'ko') ? 'ko' : 'en';
+    document.getElementById('btn-ko').classList.toggle('active', l === 'ko');
+    document.getElementById('btn-en').classList.toggle('active', l === 'en');
+
+    // swap all data-ko / data-en text
+    document.querySelectorAll('[data-ko]').forEach(el => {
+      const raw = (l === 'ko') ? el.dataset.ko : el.dataset.en;
+      if (raw) el.innerHTML = raw;
+    });
+    // placeholders
+    document.querySelectorAll('[data-placeholder-ko]').forEach(el => {
+      el.placeholder = (l === 'ko') ? el.dataset.placeholderKo : el.dataset.placeholderEn;
+    });
+    // hidden lang field
+    document.getElementById('hidden-lang').value = l;
+    // re-render result if showing
+    if (document.getElementById('result').style.display !== 'none') {
+      renderResult();
+    }
+    updateProgress();
+  }
+
+  /* ── Quiz navigation ────────────────────────────────────────────── */
+  function updateProgress() {
+    const done = Object.keys(answers).length;
+    const pct = Math.round(done / TOTAL * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    const label = (lang === 'ko')
+      ? `${done} / ${TOTAL} 완료`
+      : `${done} of ${TOTAL} answered`;
+    document.getElementById('progress-text').textContent = label;
+  }
+
+  // Attach click handlers to answer buttons
+  document.querySelectorAll('.q-step').forEach((step, stepIdx) => {
+    step.querySelectorAll('.ans-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // deselect siblings
+        step.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        // enable next
+        const nextBtn = step.querySelector('.btn-next');
+        nextBtn.disabled = false;
+        // record answer
+        answers[QUESTION_IDS[stepIdx]] = btn.dataset.value;
+        updateProgress();
+      });
+    });
+  });
+
+  function nextQ() {
+    const steps = document.querySelectorAll('.q-step');
+    steps[currentStep].classList.remove('active');
+    currentStep++;
+    if (currentStep < steps.length) {
+      steps[currentStep].classList.add('active');
+    }
+    // scroll quiz into view on mobile
+    document.getElementById('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── Scoring (mirrors diagnostic.py exactly) ────────────────────── */
+  const SCALE = { often: 1.0, sometimes: 0.5, rarely: 0.0 };
+  const QUESTIONS_META = [
+    { id: 'has_edge',     axis: 'technique',  reverse: false },
+    { id: 'plan_exit',    axis: 'technique',  reverse: false },
+    { id: 'cut_losses',   axis: 'discipline', reverse: false },
+    { id: 'revenge',      axis: 'discipline', reverse: true  },
+    { id: 'size_control', axis: 'discipline', reverse: false },
+  ];
+  const THRESHOLD = 0.5;
+
+  function axisScore(axis) {
+    const items = QUESTIONS_META.filter(q => q.axis === axis);
+    let total = 0;
+    for (const q of items) {
+      let raw = SCALE[answers[q.id] ?? 'rarely'] ?? 0;
+      total += q.reverse ? (1 - raw) : raw;
+    }
+    return total / items.length;
+  }
+
+  function classify() {
+    const tech = axisScore('technique');
+    const disc = axisScore('discipline');
+    const hasTech = tech >= THRESHOLD;
+    const hasDisc = disc >= THRESHOLD;
+    let key;
+    if (hasTech && hasDisc)       key = 'balanced';
+    else if (hasTech && !hasDisc) key = 'mind_deficient';
+    else if (!hasTech && hasDisc) key = 'technique_deficient';
+    else                          key = 'gambling';
+    return { key, tech, disc };
+  }
+
+  /* ── Copy ────────────────────────────────────────────────────────── */
+  const COPY = {
+    gambling: {
+      ko: { label: '도박 단계', headline: '지금은 기법도 심법도 잡히지 않은 상태입니다.',
+        desc: '반복 가능한 진입 기준도 없고, 손절도 잘 안 지켜지는 상황입니다. 좋은 소식: 이 단계에서 인지하는 것 자체가 이미 평균보다 앞서 있습니다. 기법을 먼저 만들고, 그 다음 심법을 붙이는 순서로 접근하세요.' },
+      en: { label: 'Gambling stage', headline: 'Right now, neither your technique nor your discipline is in place.',
+        desc: 'You don\'t yet have a repeatable entry framework, and stop-losses often go uncut. The good news: recognizing this already puts you ahead of most. Build a repeatable technique first, then reinforce the discipline to execute it.' }
+    },
+    mind_deficient: {
+      ko: { label: '심법형 부족', headline: '기법은 있는데, 그걸 못 지켜서 잃는 유형입니다.',
+        desc: '셋업을 알고 있고, 나갈 자리도 압니다. 하지만 실전에서 손절을 미루고, 연패 후 충동 진입을 하고, 포지션을 키웁니다. 이 유형이 가장 흔하고, 데이터로 보면 가장 극적으로 개선됩니다 — 언제 규율이 무너지는지를 직접 보여주는 것만으로.' },
+      en: { label: 'Discipline-deficient', headline: 'You have the technique — you just lose by not following it.',
+        desc: 'You know the setups. You know where to exit. But in the heat of the moment you delay the stop, re-enter after a loss streak, and size up on conviction. This is the most common pattern, and the one that improves most dramatically when you can see exactly when your discipline breaks — in your own data.' }
+    },
+    technique_deficient: {
+      ko: { label: '기법형 부족', headline: '마음은 단단한데, 휘두를 무기가 없는 유형입니다.',
+        desc: '손절을 잘 지키고 충동 매매를 피합니다 — 심법은 단단합니다. 하지만 진입 기준이 반복 가능한 우위로 정리되어 있지 않습니다. 지금 집중할 것은 "내가 이기는 패턴이 뭔가"를 데이터로 찾는 것입니다.' },
+      en: { label: 'Technique-deficient', headline: 'Your mindset is solid, but you have no weapon to swing.',
+        desc: 'You cut losses and avoid impulsive entries — the discipline is there. But your entries aren\'t built around a repeatable, verifiable edge. Your focus now: use data to find exactly which patterns you actually win on.' }
+    },
+    balanced: {
+      ko: { label: '균형 잡힌 편', headline: '자가진단상으론 균형이 잡혀 있습니다. 그런데—',
+        desc: '자가진단은 긍정적입니다. 하지만 실제 거래 기록은 다른 이야기를 할 수 있습니다. 자기 인식과 실제 패턴의 격차가 가장 큰 유형도 "균형 잡힌 편"입니다. 진짜 진단은 데이터가 말해줍니다.' },
+      en: { label: 'Fairly balanced', headline: 'By self-assessment you look balanced. But—',
+        desc: 'The self-assessment looks healthy. But actual trade data often tells a different story. Traders who rate themselves "balanced" show the widest gap between self-perception and real patterns. The real diagnosis lives in the data.' }
+    }
+  };
+
+  /* ── Render result ───────────────────────────────────────────────── */
+  function renderResult() {
+    const { key, tech, disc } = classify();
+    const c = COPY[key][lang];
+
+    // tag
+    const tag = document.getElementById('result-tag');
+    tag.textContent = c.label;
+    tag.className = 'result-type-tag tag-' + key;
+
+    document.getElementById('result-headline').textContent = c.headline;
+    document.getElementById('result-description').textContent = c.desc;
+
+    // bars (delayed so transition fires)
+    setTimeout(() => {
+      document.getElementById('bar-technique').style.width = (tech * 100).toFixed(0) + '%';
+      document.getElementById('bar-discipline').style.width = (disc * 100).toFixed(0) + '%';
+    }, 80);
+
+    const pct = n => Math.round(n * 100) + '%';
+    document.getElementById('score-technique').textContent = pct(tech);
+    document.getElementById('score-discipline').textContent = pct(disc);
+
+    // share links
+    const shareText = (lang === 'ko')
+      ? `나의 트레이딩 유형: ${c.label}. "${c.headline}" — Jarvis 자가진단`
+      : `My trading type: ${c.label}. "${c.headline}" — Jarvis self-diagnostic`;
+    const shareUrl = buildShareUrl(key);
+    document.getElementById('share-twitter').href =
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+
+    // hidden form field
+    document.getElementById('hidden-result-type').value = key;
+  }
+
+  function buildShareUrl(key) {
+    return `${location.origin}${location.pathname}?result=${key}&lang=${lang}`;
+  }
+
+  /* ── Submit ─────────────────────────────────────────────────────── */
+  function submit() {
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    renderResult();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // analytics event (fires if GA4 is set up)
+    if (typeof gtag !== 'undefined') {
+      const { key, tech, disc } = classify();
+      gtag('event', 'diagnostic_complete', {
+        result_type: key,
+        technique_pct: Math.round(tech * 100),
+        discipline_pct: Math.round(disc * 100),
+        lang: lang,
+      });
+    }
+
+    // push result type to URL hash so sharing the page lands on the right result
+    const { key } = classify();
+    history.replaceState(null, '', `?result=${key}&lang=${lang}`);
+  }
+
+  /* ── Copy link ──────────────────────────────────────────────────── */
+  document.getElementById('share-copy').addEventListener('click', async () => {
+    const { key } = classify();
+    const url = buildShareUrl(key);
+    try {
+      await navigator.clipboard.writeText(url);
+      const btn = document.getElementById('share-copy');
+      btn.textContent = lang === 'ko' ? '✓ 복사됨' : '✓ Copied!';
+      setTimeout(() => {
+        btn.textContent = lang === 'ko' ? '링크 복사' : 'Copy link';
+      }, 2000);
+    } catch (_) {
+      prompt('Copy this link:', url);
+    }
+  });
+
+  /* ── Formspree submit handler ───────────────────────────────────── */
+  document.getElementById('waitlist-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST', body: data,
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        const succ = document.getElementById('form-success');
+        succ.style.display = 'block';
+        succ.textContent = (lang === 'ko')
+          ? '✓ 등록되었습니다. 런칭 시 알려드리겠습니다!'
+          : '✓ You\'re on the list! We\'ll reach out when we launch.';
+        // analytics event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'waitlist_signup', { result_type: data.get('result_type'), lang });
+        }
+      }
+    } catch (_) {}
+  });
+
+  /* ── Redo ────────────────────────────────────────────────────────── */
+  function redo() {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    currentStep = 0;
+    document.querySelectorAll('.q-step').forEach((s, i) => {
+      s.classList.toggle('active', i === 0);
+      s.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('selected'));
+      s.querySelector('.btn-next').disabled = true;
+    });
+    document.getElementById('quiz').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+    updateProgress();
+    history.replaceState(null, '', location.pathname);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── On load: restore from URL params if shared ─────────────────── */
+  (function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const l = params.get('lang');
+    if (l === 'en' || l === 'ko') setLang(l);
+  })();
+</script>
+</body>
+</html>
